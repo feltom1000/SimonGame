@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Simon Dice</title>
+  </head>
+
+  <body>
+    <div class="gameboard">
+      <div id="celeste" class="color celeste left" data-color="celeste"></div>
+      <div id="violeta" class="color violeta right" data-color="violeta"></div>
+      <div id="naranja" class="color naranja left" data-color="naranja"></div>
+      <div id="verde" class="color verde right" data-color="verde"></div>
+      <button id="btnEmpezar" class="btn-start" onclick="empezarJuego()">Empezar a jugar!</button>
+    </div>
+
+    <script>
+        const btnEmpezar = document.getElementById("btnEmpezar");
+        const celeste = document.getElementById("celeste");
+        const violeta = document.getElementById("violeta");
+        const naranja = document.getElementById("naranja");
+        const verde = document.getElementById("verde");
+
+        class Juego{
+            constructor(){
+                this.inicializar()
+                this.generarSecuencia()
+                this.siguienteNivel()
+            }
+            inicializar(){
+                btnEmpezar.classList.add("hide")
+                //.classList = Ingresamos a la lista de clases disponibles en el css
+                //.add = Añadimos una clase
+                this.nivel = 1
+                this.colores = {
+                    //Guardo las variables de los botones de colores en un array de tipo objeto
+                    celeste: celeste, //Si la variable tiene el mismo nombre que el valor, puedo ahorrarme el escribirlo.
+                    violeta,
+                    naranja,
+                    verde
+                }
+            }
+            generarSecuencia(){
+                this.secuencia = new Array(10).fill(0).map(n => Math.floor(Math.random() * 4))
+                //new Array(10) = Creamos un array con 10 elementos undefined
+                //.fill(0) = llenamos el array con 10 elementos 0's.(Necesito que no sean undefined para usar el metodo .map)
+                        //El metodo fill puede tener mas argumentos: ("numero", "desde que indice del array lo agrego", "hasta que indicie")
+                //Math.random nos da un numero flotante > 0 && < 1. Al multiplicarlo x 4 tendre un numero > 0 && < 4
+                //Math.floor va a redondear el numero para abajo dejandonos el numero entero entre 0 y 3.
+            }
+
+            siguienteNivel(){
+                this.iluminarSecuencia();
+            }
+
+            transformarNumeroAColor(numero){
+                switch(numero){
+                    case 0:
+                        return "celeste"
+                        break;
+                    case 1:
+                        return "violeta"
+                        break;
+                    case 2:
+                        return "naranja"
+                        break;
+                    case 3:
+                        return "verde"
+                        break;
+                }
+            }
+
+            iluminarSecuencia(){
+                for(let i = 0; i < this.nivel; i++){
+                    //i < this.nivel va a repetir tantos colores dependiendo el nivel que estes.
+                    const coloresAIluminar = this.transformarNumeroAColor(this.secuencia[i])
+                    setTimeout(() => this.iluminarColor(coloresAIluminar), 850 * i)
+                    //setTimeout nos permitira controlar la velocidad en la que se van a iluimnar los coores.
+                }
+            }
+            
+            //IluminarColor se le va a ingresar por parametro ColoresAIluminar, que van a ser los colores ya transformados desde numeros (originarios del array secuencia) por la funcion TransformarNumeroaColor que lo hace por medio de un switch.
+            iluminarColor(color){
+                this.colores[color].classList.add("light")
+                //Ingresa al array buscando los colores pasados por parametro, y le añade la clase light para iluminarlos.
+                setTimeout(() => this.apagarColor(color), 350)
+                //setTimeout hace parecer la iluminación un parpadeo, activando la funcion apagarColor con delay de 350ms
+            }
+
+            apagarColor(color){
+                this.colores[color].classList.remove("light")
+                //Remuve la clase light y apaga la iluminacion.
+            }
+            
+        }
+
+        function empezarJuego(){
+            alert("El juego va comenzar")
+            this.juego = new Juego()
+        }
+
+    </script>
+
+  </body>
+</html>
