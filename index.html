@@ -13,24 +13,29 @@
       <div id="violeta" class="color violeta right" data-color="violeta"></div>
       <div id="naranja" class="color naranja left" data-color="naranja"></div>
       <div id="verde" class="color verde right" data-color="verde"></div>
+      <!-- El dato "data-..." es la manera de agregar data en un atributo llamado dataset del del elemento html -->
       <button id="btnEmpezar" class="btn-start" onclick="empezarJuego()">Empezar a jugar!</button>
     </div>
 
     <script>
+        //Creo las variables donde voy a tener los elementos html.
         const btnEmpezar = document.getElementById("btnEmpezar");
         const celeste = document.getElementById("celeste");
         const violeta = document.getElementById("violeta");
         const naranja = document.getElementById("naranja");
         const verde = document.getElementById("verde");
+        const ULTIMO_NIVEL = 10
 
         class Juego{
             constructor(){
                 this.inicializar()
                 this.generarSecuencia()
-                this.siguienteNivel()
+                setTimeout(this.siguienteNivel, 500)
             }
             inicializar(){
-                btnEmpezar.classList.add("hide")
+                this.elegirColor = this.elegirColor.bind(this);
+                //Aca enlazamos la identidad de this para no tener problemas en el EVENT HANDLER.
+                btnEmpezar.classList.add("hide");
                 //.classList = Ingresamos a la lista de clases disponibles en el css
                 //.add = Añadimos una clase
                 this.nivel = 1
@@ -43,8 +48,8 @@
                 }
             }
             generarSecuencia(){
-                this.secuencia = new Array(10).fill(0).map(n => Math.floor(Math.random() * 4))
-                //new Array(10) = Creamos un array con 10 elementos undefined
+                this.secuencia = new Array(ULTIMO_NIVEL).fill(0).map(n => Math.floor(Math.random() * 4))
+                //new Array(ULTIMO_NIVEL) = Creamos un array con 10 elementos undefined (o la cantidad que sea, dictaminado por la cantidad de niveles que haya en la variable ULTIMO_NIVEL)
                 //.fill(0) = llenamos el array con 10 elementos 0's.(Necesito que no sean undefined para usar el metodo .map)
                         //El metodo fill puede tener mas argumentos: ("numero", "desde que indice del array lo agrego", "hasta que indicie")
                 //Math.random nos da un numero flotante > 0 && < 1. Al multiplicarlo x 4 tendre un numero > 0 && < 4
@@ -52,7 +57,11 @@
             }
 
             siguienteNivel(){
+                this.subnivel = 0 //para el momento del input del usuario, al seleccionar la secuencia. 
+                //Primero Ilumino secuencia.
                 this.iluminarSecuencia();
+                //Luego agrego un EventListener para que tome el input del usuario.
+                this.agregarEventosClick();
             }
 
             transformarNumeroAColor(numero){
@@ -72,6 +81,20 @@
                 }
             }
 
+            transformarColorANumero(color){
+                switch(color){
+                    case "celeste":
+                        return 0
+                        //Cuando el switch returnea, no hace falta poner break porque el flujo se va a romper solo al returniar.
+                    case "violeta":
+                        return 1
+                    case "naranja":
+                        return 2
+                    case "verde":
+                        return 3
+                }
+            }
+
             iluminarSecuencia(){
                 for(let i = 0; i < this.nivel; i++){
                     //i < this.nivel va a repetir tantos colores dependiendo el nivel que estes.
@@ -81,7 +104,7 @@
                 }
             }
             
-            //IluminarColor se le va a ingresar por parametro ColoresAIluminar, que van a ser los colores ya transformados desde numeros (originarios del array secuencia) por la funcion TransformarNumeroaColor que lo hace por medio de un switch.
+            //IluminarColor se le va a ingresar por parametro ColoresAIluminar, que van a ser los colores ya transformados desde numeros (originarios del array secuencia) por la funcion TransformarNumeroAColor que lo hace por medio de un switch.
             iluminarColor(color){
                 this.colores[color].classList.add("light")
                 //Ingresa al array buscando los colores pasados por parametro, y le añade la clase light para iluminarlos.
@@ -92,6 +115,49 @@
             apagarColor(color){
                 this.colores[color].classList.remove("light")
                 //Remuve la clase light y apaga la iluminacion.
+            }
+
+            agregarEventosClick(){
+                //.addEventListener registra un evento que tiene lugar en un particular elemento (como un click)
+                this.colores.celeste.addEventListener("click", this.elegirColor);
+                this.colores.verde.addEventListener("click", this.elegirColor);
+                this.colores.violeta.addEventListener("cLick", this.elegirColor);
+                this.colores.naranja.addEventListener("click", this.elegirColor);
+            }
+
+            eliminarEventosClick(){
+                //Al terminar la secuencia o equivocarse, se elimina la posibilidad de seguir selecionando colores.
+                this.colores.celeste.removeEventListener("click", this.elegirColor);
+                this.colores.verde.removeEventListener("click", this.elegirColor);
+                this.colores.violeta.removeEventListener("cLick", this.elegirColor);
+                this.colores.naranja.removeEventListener("click", this.elegirColor);
+            }
+
+            elegirColor(evento){
+                //Primero creamos una vartiable que devuelva el nombre del color clickeado
+                const nombreColor = evento.target.dataset.color
+                //Luego debemops transformar el color a numero.
+                const numeroColor = this.transformarColorANumero(nombreColor);
+                //Iluminamos el color seleccionado por el usuario.
+                this.iluminarColor(nombreColor);
+                //Comparamos el numeroColor con la secuencia de colores, en el indice del subnivel(razon de ser del subnivel).
+                if (numeroColor === this.secuencia[this.subnivel]) {
+                    this.subnivel++
+                    //Si el subnivel, llega al nivel. Cumpliste con la secuencia, pasaste de nivel, o ganaste.
+                    if (this.subnivel === this.nivel){
+                        this.nivel++
+                        this.eliminarElementosClick()
+                        //Preguntamos si el nivel al que llego, es el ultimo.
+                        if (this.nivel === (ULTIMO_NIVEL + 1)){
+                            //Gano!
+                        } else {
+                            setTimeout(this.siguienteNivel.bind(this), 1500);
+                            //Enlazo la identidad de this porque setTimeOut es una funcion que la llama el navegador, es decir que this, sera window.
+                        }
+                    }  
+                } else {
+                    //Perdió!
+                }
             }
             
         }
