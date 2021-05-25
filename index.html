@@ -49,7 +49,7 @@
             }
             generarSecuencia(){
                 this.secuencia = new Array(ULTIMO_NIVEL).fill(0).map(n => Math.floor(Math.random() * 4))
-                //new Array(ULTIMO_NIVEL) = Creamos un array con 10 elementos undefined (o la cantidad que sea, dictaminado por la cantidad de niveles que haya en la variable ULTIMO_NIVEL)
+                //new Array(ULTIMO_NIVEL) = Creamos un array con 10 elementos undefined (o la cantidad que sea, dictaminado por la cantidad de niveles que haya en la variable)
                 //.fill(0) = llenamos el array con 10 elementos 0's.(Necesito que no sean undefined para usar el metodo .map)
                         //El metodo fill puede tener mas argumentos: ("numero", "desde que indice del array lo agrego", "hasta que indicie")
                 //Math.random nos da un numero flotante > 0 && < 1. Al multiplicarlo x 4 tendre un numero > 0 && < 4
@@ -104,7 +104,8 @@
                 }
             }
             
-            //IluminarColor se le va a ingresar por parametro ColoresAIluminar, que van a ser los colores ya transformados desde numeros (originarios del array secuencia) por la funcion TransformarNumeroAColor que lo hace por medio de un switch.
+            //IluminarColor se le va a ingresar por parametro ColoresAIluminar, que van a ser los colores ya transformados desde numeros (originarios del array secuencia)...
+            //...por la funcion TransformarNumeroaColor que lo hace por medio de un switch.
             iluminarColor(color){
                 this.colores[color].classList.add("light")
                 //Ingresa al array buscando los colores pasados por parametro, y le añade la clase light para iluminarlos.
